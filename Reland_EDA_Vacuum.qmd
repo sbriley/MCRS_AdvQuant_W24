@@ -4,14 +4,13 @@ format: html
 editor: visual
 ---
 
+## Relandscaping Exploratory Analysis: FILL IN YOUR VARIABLE HERE
 
-## Relandscaping Exploratory Analysis: Sully & Thomas & Audrey
-
-## Winter 2024 - MCRS Advanced Quantitative Methods Class Project
+Winter 2024 - MCRS Advanced Quantitative Methods Class Project
 
 Team #:
 
-Team Members: Audrey Tamayo
+Team Members:
 
 #### Load Packages
 
