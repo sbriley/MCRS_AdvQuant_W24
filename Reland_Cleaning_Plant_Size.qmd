@@ -90,6 +90,16 @@ Size_2018_2019 = Size_2018_2019 |>
   select(-c(Observers, Tag_Number))
 ```
 
+#### Issue #4: Fix non-native keying
+
+```{r}
+Size_2018_2019 = Size_2018_2019 |> 
+  mutate(Treatment = case_when(
+    Treatment == 'NonNative' ~ "Non-Native",
+    .default = Treatment
+  ))
+```
+
 ### Save your cleaned and complete Primary data frame to .csv and .Rdata and save the file as VARIABLE_Primary.csv or similar.
 
 ```{r}
