@@ -4,23 +4,29 @@ format: html
 editor: visual
 ---
 
-## Relandscaping Exploratory Analysis: FILL IN YOUR VARIABLE HERE
+## Relandscaping Exploratory Analysis: Species 
 
 Winter 2024 - MCRS Advanced Quantitative Methods Class Project
 
 Team #:
 
-Team Members:
+Team Members: Thomas, Audrey
 
 #### Load Packages
 
 ```{r}
-
+library(tidyverse)
+library(vegan)
+library(readr)
+library(dplyr)
 ```
 
 #### Import your Primary file from your saved .Rdata
 
 ```{r}
+Vacuum_Primary <- read_csv("RelandscapingDataClean/Vacuum_Primary.csv")
+
+load("RelandscapingDataClean/Vacuum_Primary.Rdata")
 
 ```
 
@@ -38,10 +44,35 @@ Never save over your Primary file. While you are playing around, only make edits
 
 Once you have something good, show it to your teammates and you can agree to add it (by pasting into the chunk below) to your shared Team Analysis. The team member who updates the Team Analysis should then merge their branch with the master, and all teammates should do a fresh "pull", which will merge the new changes to your current working version. (if this is confusing, ask us for help)
 
-#### Team Analysis
+#### Overall Goals
+
+-   Create species presence/absence matrix using PlantSP and Code
+
+-   
+
+#### Team Analysis 
 
 ```{r}
+VacRich <- Vacuum_Arthropods |>
+  select(Sample_ID, code, count)
 
+VacRich_Wide <- VacRich |> 
+  pivot_wider(names_from = Sample_ID, values_from = count, values_fill = 0)
+
+VacRich_Wide |> 
+  pivot_longer(names_to = "Site", values_to = "Abund", cols = 2:ncol(VacRich_Wide)) |> 
+  filter(Abund > 0) |> 
+  group_by(Site) |> 
+  count()
+
+VacRich_Wide |> 
+  mutate_all(~ case_when(. > 0 ~ 1, . == 0 ~ 0)) |> 
+  colSums()
+
+diversity(VacRich_Wide, index = "shannon", MARGIN = 2)
+
+#VacRich_Wide <- VacRich_Wide |>
+ # mutate_if(is.character, as.numeric)
 ```
 
 #### Team Member #1 Workspace (rename)
@@ -56,8 +87,4 @@ Once you have something good, show it to your teammates and you can agree to add
 
 ```
 
-#### Team Member #3 Workspace (rename)
-
-```{r}
-
-```
+#### 
