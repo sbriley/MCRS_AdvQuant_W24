@@ -47,6 +47,9 @@ Once you have something good, show it to your teammates and you can agree to add
 #### Erin Workspace
 
 ```{r}
+ggplot(Size_2018_2019, aes(x = as.character(Year), y=Height_cm, color=Treatment, fill = Treatment)) + 
+  geom_bar(stat = "identity")+
+  labs(title = "Height of Plants Each Year", x = "Year", y = "Height")
 
 
 
