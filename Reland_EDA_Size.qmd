@@ -52,6 +52,8 @@ ggplot(Size_2018_2019, aes(x = as.character(Year), y=Height_cm, color=Treatment,
   labs(title = "Height of Plants Each Year", x = "Year", y = "Height")
 
 
+ggplot(Size_2018_2019, aes(x = Plant_Species, y=Height_cm, color=Plant_Species, fill = Plant_Species)) + 
+  geom_bar(stat = "identity")
 
 ```
 
