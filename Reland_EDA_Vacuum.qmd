@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## Relandscaping Exploratory Analysis: Species 
+## Relandscaping Exploratory Analysis: Species
 
 Winter 2024 - MCRS Advanced Quantitative Methods Class Project
 
@@ -50,7 +50,7 @@ Once you have something good, show it to your teammates and you can agree to add
 
 -   
 
-#### Team Analysis 
+#### Team Analysis
 
 ```{r}
 VacRich <- Vacuum_Arthropods |>
@@ -69,10 +69,11 @@ VacRich_Wide |>
   mutate_all(~ case_when(. > 0 ~ 1, . == 0 ~ 0)) |> 
   colSums()
 
+VacRich_Wide <- VacRich_Wide |>
+ mutate_if(is.character, as.numeric)
+
 diversity(VacRich_Wide, index = "shannon", MARGIN = 2)
 
-#VacRich_Wide <- VacRich_Wide |>
- # mutate_if(is.character, as.numeric)
 ```
 
 #### Team Member #1 Workspace (rename)
