@@ -1,0 +1,70 @@
+---
+title: "Relandscaping Analysis Template"
+format: html
+editor: visual
+---
+
+## Relandscaping Exploratory Analysis: Sully & Thomas & Audrey
+
+## Winter 2024 - MCRS Advanced Quantitative Methods Class Project
+
+Team #:
+
+Team Members: Erin, Sully, Tom, Audrey
+
+Load Packages
+
+```{r}
+library(tidyverse)
+```
+
+#### Import your Primary file from your saved .Rdata
+
+```{r}
+load("RelandscapingDataClean/Size_Primary.Rdata")
+```
+
+### Analysis
+
+Before you begin, write your plan for analyzing this data. Add a header for each step you anticipate, then commit and push the document to Git. This may include steps such as:
+
+-   calculating summarized variables (i.e., rates or change between time points, averages of replicated observations)
+
+-   making figures to illuminate comparisons or relationships
+
+-   testing assumptions and/or running models to test for significant comparisons or relationships
+
+Never save over your Primary file. While you are playing around, only make edits under your own workspace header and on your own branch. By doing this, when you commit and push your changes to your shared repository, you avoid merge conflicts.
+
+Once you have something good, show it to your teammates and you can agree to add it (by pasting into the chunk below) to your shared Team Analysis. The team member who updates the Team Analysis should then merge their branch with the master, and all teammates should do a fresh "pull", which will merge the new changes to your current working version. (if this is confusing, ask us for help)
+
+#### Team Analysis
+
+```{r}
+
+```
+
+#### Erin Workspace
+
+```{r}
+ggplot(Size_2018_2019, aes(x = as.character(Year), y=Height_cm, color=Treatment, fill = Treatment)) + 
+  geom_bar(stat = "identity")+
+  labs(title = "Height of Plants Each Year", x = "Year", y = "Height")
+
+
+ggplot(Size_2018_2019, aes(x = Plant_Species, y=Height_cm, color=Plant_Species, fill = Plant_Species)) + 
+  geom_bar(stat = "identity")
+
+```
+
+#### Team Member #2 Workspace (rename)
+
+```{r}
+
+```
+
+#### Team Member #3 Workspace (rename)
+
+```{r}
+
+```
