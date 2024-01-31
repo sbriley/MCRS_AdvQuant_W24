@@ -321,7 +321,7 @@ Bray-Curtis works for both abundance data and presence/absence data. Bray-Curtis
 vegdist(antfire, method = "bray")
 ```
 
-### Dendrogram Example #2: 
+### Dendrogram Example #2:
 
 What is a more powerful determinant of ant community, soil type or fire regime?
 

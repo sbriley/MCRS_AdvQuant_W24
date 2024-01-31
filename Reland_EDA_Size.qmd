@@ -57,14 +57,70 @@ ggplot(Size_2018_2019, aes(x = Plant_Species, y=Height_cm, color=Plant_Species, 
 
 ```
 
-#### Team Member #2 Workspace (rename)
+#### Sully's Workspace
+
+#### How many individual plants are there for each species?
 
 ```{r}
+# Count up number of individuals in each species
+Size_Summary = Size_2018_2019 |> 
+  group_by(Plant_Species) |> 
+  summarize(count = n())
+
+# Calculate mean number of individuals per species 
+Mean_num_individuals = mean(Size_Summary$count)
+
+# Plot 
+Size_Summary |>
+  ggplot(aes(x = Plant_Species, y = count, fill = Plant_Species)) + 
+  geom_bar(stat = 'identity') + 
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  ylim(0, 38) +
+  theme(legend.position = "none") + 
+  labs(title = paste(
+    'Number of individuals per species (mean: ',
+    round(Mean_num_individuals, 2),
+    ')',
+    sep = '' 
+    )) + 
+  xlab("Species") + 
+  ylab("Count") +
+  geom_hline(yintercept = Mean_num_individuals, color="black", linetype="dashed") +
+  annotate("text", x = "ELYCON", y = 35, label = "Average", vjust = -0.5, color="maroon") + 
+  annotate("segment", x = "ELYCON", xend = "ELYCON", y = Mean_num_individuals, yend = 35, color = "maroon")
+
 
 ```
 
-#### Team Member #3 Workspace (rename)
+#### How big are each of these plants species?
 
 ```{r}
+# Pivot sizes so that each measurement is its own observation, labeled with height, length or width as is appropriate
+Measurements <- Size_2018_2019 |> 
+  select(-c(Notes, Date, Year)) |>
+  pivot_longer(cols = c("Height_cm", "Width_cm", "Length_cm"), names_to = "Measurement_Type", values_to = "Measurement_cm")
+
+# Create labels for the legend 
+Measurement_labels = c("Height", "Length", "Width")
+names(Measurement_labels) = c("Height_cm", "Length_cm", "Width_cm")
+
+# Plot, with facets for native / non-native species
+Measurements |> 
+  ggplot() + aes(x = Plant_Species, y = Measurement_cm, fill = Measurement_Type) + 
+  geom_boxplot() + 
+  facet_wrap(~ Treatment, nrow = 1, scales = 'free_x') + 
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  labs(
+    title = 'Plant Species Height, Length, and Width',
+    fill = 'Measurement Type'
+    ) + 
+  scale_fill_discrete(labels = Measurement_labels) +
+  xlab("Species") + 
+  ylab("Measurement (cm)") + 
+  theme(legend.position = "top")
+
+
 
 ```
+
+These graphs are cluttered, but give a good picture of plant sizes across species. I am noticing visually that non-native plants have less variation in their sizes. I can also see which species are taller than they are wide / long, and which are more square. I am curious to learn more about ELAPUN, which is the largest Non-Native plant, and whether its size has an impact on the ecosystem.
