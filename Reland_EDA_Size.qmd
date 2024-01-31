@@ -71,7 +71,7 @@ Size_Summary = Size_2018_2019 |>
 Mean_num_individuals = mean(Size_Summary$count)
 
 # Plot 
-Size_Summary |>
+Species_Count_Plot = Size_Summary |>
   ggplot(aes(x = Plant_Species, y = count, fill = Plant_Species)) + 
   geom_bar(stat = 'identity') + 
   scale_x_discrete(guide = guide_axis(angle = 90)) +
@@ -89,6 +89,10 @@ Size_Summary |>
   annotate("text", x = "ELYCON", y = 35, label = "Average", vjust = -0.5, color="maroon") + 
   annotate("segment", x = "ELYCON", xend = "ELYCON", y = Mean_num_individuals, yend = 35, color = "maroon")
 
+Species_Count_Plot
+
+#ggsave(plot = Species_Count_Plot, width = 5, height = 3.5, filename="size-eda-species-count-plot.jpg")
+
 
 ```
 
@@ -105,7 +109,7 @@ Measurement_labels = c("Height", "Length", "Width")
 names(Measurement_labels) = c("Height_cm", "Length_cm", "Width_cm")
 
 # Plot, with facets for native / non-native species
-Measurements |> 
+Measurements_Plot = Measurements |> 
   ggplot() + aes(x = Plant_Species, y = Measurement_cm, fill = Measurement_Type) + 
   geom_boxplot() + 
   facet_wrap(~ Treatment, nrow = 1, scales = 'free_x') + 
@@ -119,7 +123,9 @@ Measurements |>
   ylab("Measurement (cm)") + 
   theme(legend.position = "top")
 
+Measurements_Plot
 
+#ggsave(plot = Measurements_Plot, width = 8, height = 5, filename="size-eda-measurements-plot.jpg")
 
 ```
 
