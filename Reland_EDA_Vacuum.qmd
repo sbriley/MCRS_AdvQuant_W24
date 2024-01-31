@@ -19,6 +19,8 @@ library(tidyverse)
 library(vegan)
 library(readr)
 library(dplyr)
+library(ggplot2)
+library(PNWColors)
 ```
 
 #### Import your Primary file from your saved .Rdata
@@ -50,7 +52,7 @@ Once you have something good, show it to your teammates and you can agree to add
 
 -   
 
-#### Team Analysis
+#### Setting Up Our Matrix
 
 ```{r}
 VacRich <- Vacuum_Arthropods |>
@@ -65,27 +67,43 @@ VacRich_Wide |>
   group_by(Site) |> 
   count()
 
-VacRich_Wide |> 
+VacRich_Count <- VacRich_Wide |> 
   mutate_all(~ case_when(. > 0 ~ 1, . == 0 ~ 0)) |> 
-  colSums()
+  colSums() |>
+  as.data.frame() |>
+ rownames_to_column() |>
+  separate(rowname, into = c('Naturalization', 'Species', 'Replicate'), sep = '_') |>
+  rename(Species_Count = 'colSums(mutate_all(VacRich_Wide, ~case_when(. > 0 ~ 1, . == 0 ~ 0)))') |>
+  slice(-1)
 
-VacRich_Wide <- VacRich_Wide |>
- mutate_if(is.character, as.numeric)
+  
+#VacRich_Wide <- VacRich_Wide |>
+ #mutate_if(is.character, as.numeric) |>
+  #mutate(code = as.character(code))
 
-diversity(VacRich_Wide, index = "shannon", MARGIN = 2)
+select(VacRich_Wide, -code) |>
+diversity(index = "shannon", MARGIN = 2)
+
 
 ```
 
-#### Team Member #1 Workspace (rename)
+#### Generating a Graph
 
 ```{r}
+SpeciesBar <- ggplot(VacRich_Count,
+       aes(x = Species, y = Species_Count, fill = Naturalization, color = Naturalization)) + 
+  geom_bar(stat = 'identity') +
+   facet_wrap(Naturalization~., scales = 'free_x') + 
+  labs(y = "Insect Species Count", x = "Plant Species", title = "Species Count in Native and Non-Native Plant Species")
 
+NvNN <- ggplot(VacRich_Count,
+       aes(x = Naturalization, y = Species_Count, fill = Species, color = Starfish)) + 
+  geom_bar(stat = 'identity')
+
+VacRich_Count |>
+  group_by(Naturalization) |>
+  count()
+
+
+#SpeciesBar + scale_fill_manual(values = pnw_palette("Starfish", 6, type="discrete"))
 ```
-
-#### Team Member #2 Workspace (rename)
-
-```{r}
-
-```
-
-#### 
