@@ -74,16 +74,38 @@ VacRich_Count <- VacRich_Wide |>
  rownames_to_column() |>
   separate(rowname, into = c('Naturalization', 'Species', 'Replicate'), sep = '_') |>
   rename(Species_Count = 'colSums(mutate_all(VacRich_Wide, ~case_when(. > 0 ~ 1, . == 0 ~ 0)))') |>
-  slice(-1)
+  slice(-1) |>
+   mutate(Morphological_Pair = case_when(
+      Species == "ROSOFF" | Species == "ERIFAS" ~ "ROSOFF-ERIFAS",
+      Species == "RHAIND" | Species == "FRACAL" ~ "RHAIND-FRACAL",
+      Species == "LAVGIN" | Species == "SALAPI" ~ "LAVGIN-SALAPI",
+      Species == "ATLFES" | Species == "PENSPA" | 
+      Species == 'MUHRIG' | Species == 'ELYCON' ~ 'GRASS',
+      Species == "ACHTOM" | Species == "ACHMIL" ~ "ACHTOM-ACHMIL",
+      .default = NA)
+  )
 
   
 #VacRich_Wide <- VacRich_Wide |>
  #mutate_if(is.character, as.numeric) |>
   #mutate(code = as.character(code))
 
-select(VacRich_Wide, -code) |>
-diversity(index = "shannon", MARGIN = 2)
+VacDiv <- select(VacRich_Wide, -code) |>
+diversity(index = "shannon", MARGIN = 2) |>
+  as.data.frame() |>
+   rownames_to_column() |>
+  separate(rowname, into = c('Naturalization', 'Species', 'Replicate'), sep = '_') |>
+  rename(Shannon_Div = 'diversity(select(VacRich_Wide, -code), index = "shannon", MARGIN = 2)') |>
+  mutate(Morphological_Pair = case_when(
+      Species == "ROSOFF" | Species == "ERIFAS" ~ "ROSOFF-ERIFAS",
+      Species == "RHAIND" | Species == "FRACAL" ~ "RHAIND-FRACAL",
+      Species == "LAVGIN" | Species == "SALAPI" ~ "LAVGIN-SALAPI",
+      Species == "ATLFES" | Species == "PENSPA" | 
+      Species == 'MUHRIG' | Species == 'ELYCON' ~ 'GRASS',
+      Species == "ACHTOM" | Species == "ACHMIL" ~ "ACHTOM-ACHMIL",
+      .default = NA))
 
+ 
 
 ```
 
@@ -94,16 +116,40 @@ SpeciesBar <- ggplot(VacRich_Count,
        aes(x = Species, y = Species_Count, fill = Naturalization, color = Naturalization)) + 
   geom_bar(stat = 'identity') +
    facet_wrap(Naturalization~., scales = 'free_x') + 
-  labs(y = "Insect Species Count", x = "Plant Species", title = "Species Count in Native and Non-Native Plant Species")
+  labs(y = "Insect Species Count", x = "Plant Species", title = "Mean Arthropod Species Richness in Native and Non-Native Plant Species")
 
-NvNN <- ggplot(VacRich_Count,
-       aes(x = Naturalization, y = Species_Count, fill = Species, color = Starfish)) + 
-  geom_bar(stat = 'identity')
+VacRich_NVNN <- ggplot(VacRich_Count,
+       aes(x = Naturalization, y = Species_Count)) + 
+  geom_boxplot() +
+    labs(y = "Arthropod Species Richness", x = "Naturalization", title = "Arthropod Species Richness in Native and Non-Native Plant Species")
 
-VacRich_Count |>
-  group_by(Naturalization) |>
-  count()
+VacRich_Morph <- VacRich_Count |>
+  filter(Morphological_Pair == 'LAVGIN-SALAPI') |>
+  ggplot(
+       aes(x = Species, y = mean(Species_Count), fill = Naturalization, color = Naturalization)) + 
+  geom_bar(stat = 'identity') +
+  labs(y = "Mean Arthropod Species Richness", x = "Plant Species", title = "Mean Arthropod Species Richness Between Same Morphological Groups")
+
+#VacRich_Count |>
+  #group_by(Species) |>
+  #count()
+
+VacDiv_NVNN <- ggplot(VacDiv,
+       aes(x = Naturalization, y = Shannon_Div)) + 
+  geom_boxplot() +
+  labs(y = "Arthropod Shannon Diversity Index", x = "Naturalization", title = "Shannon Diversity Index in Native and Non-Native Plant Species")
+
+VacDiv_Morph <- VacDiv |>
+  filter(Morphological_Pair == 'LAVGIN-SALAPI') |>
+  ggplot(
+       aes(x = Species, y = mean(Shannon_Div), fill = Naturalization, color = Naturalization)) + 
+  geom_bar(stat = 'identity') +
+  labs(y = "Mean Arthropod Shannon Diversity Index", x = "Plant Species", title = "Shannon Diversity Index Between Same Morphological Groups")
 
 
-#SpeciesBar + scale_fill_manual(values = pnw_palette("Starfish", 6, type="discrete"))
+VacRich_NVNN
+VacRich_Morph
+VacDiv_NVNN
+VacDiv_Morph
+
 ```
