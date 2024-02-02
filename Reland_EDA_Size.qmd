@@ -101,7 +101,7 @@ Species_Count_Plot
 ```{r}
 # Pivot sizes so that each measurement is its own observation, labeled with height, length or width as is appropriate
 Measurements <- Size_2018_2019 |> 
-  select(-c(Notes, Date, Year)) |>
+  select(-c(Notes, Date)) |>
   pivot_longer(cols = c("Height_cm", "Width_cm", "Length_cm"), names_to = "Measurement_Type", values_to = "Measurement_cm")
 
 # Create labels for the legend 
@@ -112,7 +112,7 @@ names(Measurement_labels) = c("Height_cm", "Length_cm", "Width_cm")
 Measurements_Plot = Measurements |> 
   ggplot() + aes(x = Plant_Species, y = Measurement_cm, fill = Measurement_Type) + 
   geom_boxplot() + 
-  facet_wrap(~ Treatment, nrow = 1, scales = 'free_x') + 
+  facet_grid(Year ~ Treatment, scales = 'free_x') + 
   scale_x_discrete(guide = guide_axis(angle = 90)) +
   labs(
     title = 'Plant Species Height, Length, and Width',
@@ -125,8 +125,154 @@ Measurements_Plot = Measurements |>
 
 Measurements_Plot
 
-#ggsave(plot = Measurements_Plot, width = 8, height = 5, filename="size-eda-measurements-plot.jpg")
+#ggsave(plot = Measurements_Plot, width = 8, height = 8, filename="size-eda-measurements-plot.jpg")
 
 ```
 
 These graphs are cluttered, but give a good picture of plant sizes across species. I am noticing visually that non-native plants have less variation in their sizes. I can also see which species are taller than they are wide / long, and which are more square. I am curious to learn more about ELAPUN, which is the largest Non-Native plant, and whether its size has an impact on the ecosystem.
+
+### In-class EDA
+
+```{r}
+
+Size_2018_2019 = Size_2018_2019 |> mutate(
+  Volume = Height_cm * Length_cm * Width_cm,
+  Year = factor(Year)
+)
+
+Volume_Plot = Size_2018_2019 |> 
+  ggplot(aes(x = Treatment, y = log(Volume), color = Year)) +
+  geom_boxplot() + 
+  labs(
+     title = 'Year-over-year Plant Volume'
+   ) + 
+   xlab("Plant Species")
+
+Volume_Plot
+
+#ggsave(plot = Volume_Plot, width = 7, height = 5, filename="plant-volume.jpg")
+
+  
+```
+
+```{r}
+
+Size_Morphological_Pairs = Size_2018_2019 |> mutate(
+  Morphological_Pair = case_when(
+    Plant_Species == "ROSOFF" 
+    | Plant_Species == "ERIFAS" 
+    ~ "ROSOFF-ERIFAS", 
+    Plant_Species == "RHAIND" 
+    | Plant_Species == "FRACAL" 
+    ~ "RHAIND-FRACAL",
+    Plant_Species == "LAVGIN" 
+    | Plant_Species == "SALAPI" 
+    ~ "LAVGIN-SALAPI",
+    Plant_Species == "ATLFES" 
+    | Plant_Species == "PENSPA"
+    | Plant_Species == "MUHRIG"
+    | Plant_Species == "ELYCON" 
+    ~ "GRASS",
+    Plant_Species == "ACHTOM" 
+    | Plant_Species == "ACHMIL" 
+    ~ "ACHTOM-ACHMIL",
+    .default = NA
+  )
+) |> filter(!is.na(Morphological_Pair))
+
+Morphological_Plot = Size_Morphological_Pairs |> group_by(Morphological_Pair) |> 
+   ggplot(aes(x = Plant_Species, y = log(Volume), color = Year, fill = Treatment)) +
+   geom_boxplot() + 
+   scale_fill_manual(values = c("gray", "white")) +
+   facet_wrap( 
+     ~ Morphological_Pair, scales = 'free_x',
+     labeller = as_labeller(c(
+       'GRASS' = 'ELYCON and PENSPA (grasses)',
+       'ROSOFF-ERIFAS' = 'ERIFAS and ROSOFF',
+       'LAVGIN-SALAPI' = 'LAVGIN and SALAPI',
+       'RHAIND-FRACAL' = 'RHAIND and FRACAL'
+     ))
+     ) + 
+   labs(
+     title = 'Year-over-year Plant Volume for Morphological Pairs'
+   ) + 
+   xlab("Plant Species")
+
+Morphological_Plot
+
+#ggsave(plot = Morphological_Plot, width = 7, height = 5, filename="plant-volume-morphological-pairs.jpg")
+   
+```
+
+```{r}
+
+Pair_Plot_Height = Size_Morphological_Pairs |> group_by(Morphological_Pair) |> 
+   ggplot(aes(x = Plant_Species, y = Height_cm, color = Year, fill = Treatment)) +
+   geom_boxplot() + 
+   scale_fill_manual(values = c("gray", "white")) +
+   facet_wrap( 
+     ~ Morphological_Pair, scales = 'free_x',
+     labeller = as_labeller(c(
+       'GRASS' = 'ELYCON and PENSPA (grasses)',
+       'ROSOFF-ERIFAS' = 'ERIFAS and ROSOFF',
+       'LAVGIN-SALAPI' = 'LAVGIN and SALAPI',
+       'RHAIND-FRACAL' = 'RHAIND and FRACAL'
+     ))
+     ) + 
+   labs(
+     title = 'Year-over-year Plant Height for Morphological Pairs'
+   ) + 
+   xlab("Plant Species")
+
+Pair_Plot_Height
+
+#ggsave(plot = Pair_Plot_Height, width = 7, height = 5, filename="plant-height-morphological-pairs.jpg")
+```
+
+```{r}
+Pair_Plot_Length = Size_Morphological_Pairs |> group_by(Morphological_Pair) |> 
+   ggplot(aes(x = Plant_Species, y = Length_cm, color = Year, fill = Treatment)) +
+   geom_boxplot() + 
+   scale_fill_manual(values = c("gray", "white")) +
+   facet_wrap( 
+     ~ Morphological_Pair, scales = 'free_x',
+     labeller = as_labeller(c(
+       'GRASS' = 'ELYCON and PENSPA (grasses)',
+       'ROSOFF-ERIFAS' = 'ERIFAS and ROSOFF',
+       'LAVGIN-SALAPI' = 'LAVGIN and SALAPI',
+       'RHAIND-FRACAL' = 'RHAIND and FRACAL'
+     ))
+     ) + 
+   labs(
+     title = 'Year-over-year Plant Length for Morphological Pairs'
+   ) + 
+   xlab("Plant Species")
+
+Pair_Plot_Length
+
+#ggsave(plot = Pair_Plot_Length, width = 7, height = 5, filename="plant-length-morphological-pairs.jpg")
+```
+
+```{r}
+Pair_Plot_Width = Size_Morphological_Pairs |> group_by(Morphological_Pair) |> 
+   ggplot(aes(x = Plant_Species, y = Width_cm, color = Year, fill = Treatment)) +
+   geom_boxplot() + 
+   scale_fill_manual(values = c("gray", "white")) +
+   facet_wrap( 
+     ~ Morphological_Pair, scales = 'free_x',
+     labeller = as_labeller(c(
+       'GRASS' = 'ELYCON and PENSPA (grasses)',
+       'ROSOFF-ERIFAS' = 'ERIFAS and ROSOFF',
+       'LAVGIN-SALAPI' = 'LAVGIN and SALAPI',
+       'RHAIND-FRACAL' = 'RHAIND and FRACAL'
+     ))
+     ) + 
+   labs(
+     title = 'Year-over-year Plant Width for Morphological Pairs'
+   ) + 
+   xlab("Plant Species")
+
+Pair_Plot_Width
+
+#ggsave(plot = Pair_Plot_Height, width = 7, height = 5, filename="plant-width-morphological-pairs.jpg")
+```
