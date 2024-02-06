@@ -112,11 +112,11 @@ diversity(index = "shannon", MARGIN = 2) |>
 #### Generating a Graph
 
 ```{r}
-SpeciesBar <- ggplot(VacRich_Count,
-       aes(x = Species, y = Species_Count, fill = Naturalization, color = Naturalization)) + 
-  geom_bar(stat = 'identity') +
-   facet_wrap(Naturalization~., scales = 'free_x') + 
-  labs(y = "Insect Species Count", x = "Plant Species", title = "Mean Arthropod Species Richness in Native and Non-Native Plant Species")
+#SpeciesBar <- ggplot(VacRich_Count,
+#      aes(x = Species, y = Species_Count, fill = Naturalization, color = Naturalization)) + 
+#  geom_bar(stat = 'identity') +
+#   facet_wrap(Naturalization~., scales = 'free_x') + 
+#  labs(y = "Insect Species Count", x = "Plant Species", title = "Mean Arthropod Species Richness in Native and Non-Native Plant Species")
 
 VacRich_NVNN <- ggplot(VacRich_Count,
        aes(x = Naturalization, y = Species_Count)) + 
